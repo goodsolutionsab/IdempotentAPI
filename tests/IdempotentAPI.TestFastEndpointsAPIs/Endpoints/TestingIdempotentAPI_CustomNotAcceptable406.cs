@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using FastEndpoints;
 using IdempotentAPI.MinimalAPI;
 using IdempotentAPI.TestFastEndpointsAPIs.DTOs;
@@ -37,8 +37,7 @@ namespace IdempotentAPI.TestFastEndpointsAPIs.Endpoints
                     message
                 }
             };
-
-            await SendAsync(errorModel, StatusCodes.Status406NotAcceptable, cancellation: cancellationToken);
+            await Send.ResponseAsync(errorModel, StatusCodes.Status406NotAcceptable, cancellationToken);
         }
     }
 }

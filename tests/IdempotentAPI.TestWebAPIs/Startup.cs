@@ -10,7 +10,7 @@ using IdempotentAPI.Extensions.DependencyInjection;
 using IdempotentAPI.TestWebAPIs.Extensions;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using StackExchange.Redis;

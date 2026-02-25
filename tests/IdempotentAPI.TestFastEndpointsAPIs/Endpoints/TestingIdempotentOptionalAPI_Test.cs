@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using IdempotentAPI.MinimalAPI;
 using IdempotentAPI.TestFastEndpointsAPIs.DTOs;
 
@@ -15,7 +15,7 @@ namespace IdempotentAPI.TestFastEndpointsAPIs.Endpoints
 
         public override async Task HandleAsync(CancellationToken cancellationToken)
         {
-            await SendAsync(new ResponseDTOs(), cancellation: cancellationToken);
+            await Send.OkAsync(new ResponseDTOs(), cancellationToken);
         }
     }
 }

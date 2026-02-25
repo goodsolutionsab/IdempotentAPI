@@ -9,7 +9,7 @@ using IdempotentAPI.DistributedAccessLock.RedLockNet.Extensions.DependencyInject
 using IdempotentAPI.Extensions.DependencyInjection;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +24,7 @@ builder.Services
     });
 
 
-builder.Services.AddIdempotentMinimalAPI(new IdempotencyOptions());
+builder.Services.AddIdempotentMinimalAPI(new IdempotentAPI.Core.IdempotencyOptions());
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>

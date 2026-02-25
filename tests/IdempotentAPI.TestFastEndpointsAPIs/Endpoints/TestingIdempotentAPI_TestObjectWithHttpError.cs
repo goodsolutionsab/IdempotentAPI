@@ -1,4 +1,4 @@
-﻿using FastEndpoints;
+using FastEndpoints;
 using IdempotentAPI.MinimalAPI;
 using IdempotentAPI.TestFastEndpointsAPIs.DTOs;
 
@@ -17,7 +17,7 @@ namespace IdempotentAPI.TestFastEndpointsAPIs.Endpoints
         {
             await Task.Delay(requestWithHttpError.DelaySeconds * 1000, cancellationToken);
 
-            await SendAsync(null, requestWithHttpError.HttpErrorCode, cancellationToken);
+            await Send.ResponseAsync(null, requestWithHttpError.HttpErrorCode, cancellationToken);
         }
     }
 }
