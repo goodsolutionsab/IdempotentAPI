@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<PackageId>NEOilx.IdempotentAPI.MinimalAPI</PackageId>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<Description>IdempotentAPI support in Minimal APIs.</Description>
 		<PackageTags>cache;idempotent api;idempotency;asp.net core;attribute;middleware;rest</PackageTags>
 		<LangVersion>latest</LangVersion>

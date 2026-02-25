@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using IdempotentAPI.Cache.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ZiggyCreatures.Caching.Fusion;
@@ -26,17 +26,16 @@ namespace IdempotentAPI.Cache.FusionCache.Extensions.DependencyInjection
             serviceCollection.AddSingleton<IIdempotencyCache, IdempotencyFusionCache>();
 
             // Register the FusionCache
-            serviceCollection.AddFusionCache(options =>
+            serviceCollection.AddFusionCache()
+                .WithOptions(options =>
                 {
-                    // Set custom cache options
                     if (cacheEntryOptions != null)
-                    options.DefaultEntryOptions = cacheEntryOptions;
+                        options.DefaultEntryOptions = cacheEntryOptions;
 
-                // Distributed cache circuit-breaker
-                if (distributedCacheCircuitBreakerDuration.HasValue)
-                    options.DistributedCacheCircuitBreakerDuration = distributedCacheCircuitBreakerDuration.Value;
+                    if (distributedCacheCircuitBreakerDuration.HasValue)
+                        options.DistributedCacheCircuitBreakerDuration = distributedCacheCircuitBreakerDuration.Value;
                 });
-;
+
             return serviceCollection;
         }
 

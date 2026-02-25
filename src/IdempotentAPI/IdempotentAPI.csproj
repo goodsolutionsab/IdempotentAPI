@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <PackageId>NEOilx.IdempotentAPI</PackageId>
-        <TargetFrameworks>netstandard2.0;netstandard2.1;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netstandard2.1;net10.0</TargetFrameworks>
         <Description>IdempotentAPI is an ASP.NET Core attribute by which any HTTP write operations (POST and PATCH) can have effect only once for the given request data. (neoilx fork with ContentLength fix)</Description>
         <PackageTags>idempotent api;idempotency;asp.net core;attribute;middleware;rest</PackageTags>
         <LangVersion>latest</LangVersion>
@@ -11,8 +11,8 @@
 
     <!-- For netstandard, use the package reference (brings in transitive dependencies) -->
     <ItemGroup Condition="$(TargetFramework.StartsWith('netstandard'))">
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="8.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.9" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.3" />
     </ItemGroup>
 
     <!-- For modern .NET, use the shared framework (no transitive Newtonsoft.Json) -->
@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Text.Json" Version="8.0.5" />
+        <PackageReference Include="System.Text.Json" Version="10.0.3" />
     </ItemGroup>
 
     <ItemGroup>

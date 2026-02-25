@@ -70,7 +70,7 @@ namespace IdempotentAPI.Cache.FusionCache
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return await _fusionCache.GetOrSetAsync(key, defaultValue, (FusionCacheEntryOptions?)options, token)
+            return await _fusionCache.GetOrSetAsync(key, defaultValue, (FusionCacheEntryOptions?)options,token: token)
                 .ConfigureAwait(false);
         }
 
