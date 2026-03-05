@@ -25,8 +25,16 @@ namespace IdempotentAPI.Cache.FusionCache.Extensions.DependencyInjection
             // Register the FusionCache implementation of for the IIdempotencyCache
             serviceCollection.AddSingleton<IIdempotencyCache, IdempotencyFusionCache>();
 
-            // Register the FusionCache
+            // Register the FusionCache.
+            // In FusionCache v2+, components are NOT auto-discovered by default.
+            // We explicitly discover the distributed cache (L2) so that cross-instance
+            // idempotency detection works. We use TryWithRegisteredDistributedCache()
+            // (not TryWithAutoSetup()) to avoid picking up an IMemoryCache from DI
+            // that may have a SizeLimit configured, which would cause
+            // "Cache entry must specify a value for Size when SizeLimit is set" errors.
+            // The serializer is still auto-discovered by FusionCache v2 by default.
             serviceCollection.AddFusionCache()
+                .TryWithRegisteredDistributedCache()
                 .WithOptions(options =>
                 {
                     if (cacheEntryOptions != null)
