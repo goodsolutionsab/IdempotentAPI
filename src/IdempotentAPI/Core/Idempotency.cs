@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -581,8 +581,12 @@ namespace IdempotentAPI.Core
                 requestsData.Add(httpRequest.Path.ToString());
             }
 
-            // Read the post data from the request body
-            if (arguments.Any(a => a?.GetType().ToString() == FastEndpointsEndpointFactory))
+            // Read the post data from the request body when the arguments don't
+            // already contain body data. This covers FastEndpoints (v8.0+) where the
+            // route delegate has no parameters so arguments is empty, as well as older
+            // FE versions that passed an EndpointFactory instance.
+            if (arguments.Count == 0
+                || arguments.Any(a => a?.GetType().ToString() == FastEndpointsEndpointFactory))
             {
                 string requestBodyHash = await GenerateRequestsBodyHashAsync(httpRequest);
                 requestsData.Add(requestBodyHash);
