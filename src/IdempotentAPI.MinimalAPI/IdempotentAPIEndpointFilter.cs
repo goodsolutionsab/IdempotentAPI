@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdempotentAPI.Core;
@@ -65,6 +65,8 @@ public class IdempotentAPIEndpointFilter : IEndpointFilter
                 var realCallResult = await next(context);
 
                 object? value = null;
+                int? statusCode = null;
+
                 if (realCallResult is not IResult)
                 {
                     value = realCallResult;
@@ -73,6 +75,14 @@ public class IdempotentAPIEndpointFilter : IEndpointFilter
                 {
                     value = valueHttpResult.Value;
                 }
+                else
+                {
+                    // For IResult types that don't implement IValueHttpResult
+                    // (e.g., FastEndpoints' internal handler), execute the IResult
+                    // so the endpoint actually runs and writes its response.
+                    await ((IResult)realCallResult).ExecuteAsync(context.HttpContext);
+                    statusCode = context.HttpContext.Response.StatusCode;
+                }
 
                 objectResult = new ObjectResult(value);
 
@@ -80,6 +90,10 @@ public class IdempotentAPIEndpointFilter : IEndpointFilter
                     statusCodeHttpResult.StatusCode.HasValue)
                 {
                     objectResult.StatusCode = statusCodeHttpResult.StatusCode.Value;
+                }
+                else if (statusCode.HasValue)
+                {
+                    objectResult.StatusCode = statusCode.Value;
                 }
             }
             else
@@ -99,7 +113,7 @@ public class IdempotentAPIEndpointFilter : IEndpointFilter
                 }
             }
 
-            if (objectResult.StatusCode.HasValue)
+            if (objectResult.StatusCode.HasValue && !context.HttpContext.Response.HasStarted)
             {
                 context.HttpContext.Response.StatusCode = objectResult.StatusCode.Value;
             }
