@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
 using IdempotentAPI.TestWebAPIs.DTOs;
 using Xunit;
 
@@ -76,8 +75,8 @@ namespace IdempotentAPI.IntegrationTests
 
             // Assert
             var resultStatusCodes = new List<HttpStatusCode>() { httpGetTask1.Result.StatusCode, httpGetTask2.Result.StatusCode };
-            resultStatusCodes.Should().Contain(HttpStatusCode.NotAcceptable);
-            resultStatusCodes.Should().Contain(HttpStatusCode.Conflict);
+            Assert.Contains(HttpStatusCode.NotAcceptable, resultStatusCodes);
+            Assert.Contains(HttpStatusCode.Conflict, resultStatusCodes);
         }
 
         [Theory]
@@ -105,8 +104,8 @@ namespace IdempotentAPI.IntegrationTests
 
             // Assert
             var resultStatusCodes = new List<HttpStatusCode>() { httpGetTask1.Result.StatusCode, httpGetTask2.Result.StatusCode };
-            resultStatusCodes.Should().Contain(HttpStatusCode.NotAcceptable);
-            resultStatusCodes.Should().Contain(HttpStatusCode.Conflict);
+            Assert.Contains(HttpStatusCode.NotAcceptable, resultStatusCodes);
+            Assert.Contains(HttpStatusCode.Conflict, resultStatusCodes);
         }
 
         [Theory]
@@ -129,13 +128,13 @@ namespace IdempotentAPI.IntegrationTests
 
 
             // Assert
-            httpResponse1.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-            httpResponse2.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+            Assert.Equal(HttpStatusCode.NotAcceptable, httpResponse1.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, httpResponse2.StatusCode);
 
             var responseContent1 = await httpResponse1.Content.ReadAsStringAsync();
             var responseContent2 = await httpResponse2.Content.ReadAsStringAsync();
 
-            responseContent1.Should().NotBe(responseContent2);
+            Assert.NotEqual(responseContent1, responseContent2);
         }
 
         [Theory]
@@ -161,13 +160,13 @@ namespace IdempotentAPI.IntegrationTests
 
 
             // Assert
-            httpResponse1.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
-            httpResponse2.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+            Assert.Equal(HttpStatusCode.NotAcceptable, httpResponse1.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, httpResponse2.StatusCode);
 
             var responseContent1 = await httpResponse1.Content.ReadAsStringAsync();
             var responseContent2 = await httpResponse2.Content.ReadAsStringAsync();
 
-            responseContent1.Should().NotBe(responseContent2);
+            Assert.NotEqual(responseContent1, responseContent2);
         }
     }
 }

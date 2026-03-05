@@ -5,7 +5,6 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FluentAssertions;
 using IdempotentAPI.AccessCache;
 using IdempotentAPI.Filters;
 using IdempotentAPI.Helpers;
@@ -855,13 +854,11 @@ namespace IdempotentAPI.UnitTests.FiltersTests
             Assert.NotNull(actionExecutingContext.Result);
 
             Assert.IsType<ObjectResult>(actionExecutingContext.Result);
-            // Assert result type matches
-            actionExecutingContext.Result.GetType().Should().Be(controllerExecutionResult.GetType());
-            // With System.Text.Json, cached values are JsonElement - compare the content
+            Assert.Equal(controllerExecutionResult.GetType(), actionExecutingContext.Result.GetType());
             var cachedValue = (JsonElement)((ObjectResult)actionExecutingContext.Result).Value;
             var expectedModel = (ResponseModelBasic)controllerExecutionResult.Value;
-            cachedValue.GetProperty("id").GetInt32().Should().Be(expectedModel.Id);
-            cachedValue.GetProperty("createdOn").GetDateTime().Should().Be(expectedModel.CreatedOn);
+            Assert.Equal(expectedModel.Id, cachedValue.GetProperty("id").GetInt32());
+            Assert.Equal(expectedModel.CreatedOn, cachedValue.GetProperty("createdOn").GetDateTime());
 
             Assert.Equal((int)expectedResponseStatusCode, ((ObjectResult)actionExecutingContext.Result).StatusCode);
         }
@@ -1208,8 +1205,8 @@ namespace IdempotentAPI.UnitTests.FiltersTests
 
 
             var responseValue = (JsonElement)((ObjectResult)inflightExecutingContext.Result).Value;
-            responseValue.GetProperty("id").GetInt32().Should().Be(expectedCachedModel.Id);
-            responseValue.GetProperty("createdOn").GetDateTime().Should().Be(expectedCachedModel.CreatedOn);
+            Assert.Equal(expectedCachedModel.Id, responseValue.GetProperty("id").GetInt32());
+            Assert.Equal(expectedCachedModel.CreatedOn, responseValue.GetProperty("createdOn").GetDateTime());
         }
 
 
@@ -1306,18 +1303,18 @@ namespace IdempotentAPI.UnitTests.FiltersTests
 
 
             // Assert (result should not be null)
-            actionExecutingContext.Result.Should().NotBeNull();
+            Assert.NotNull(actionExecutingContext.Result);
 
             // Assert (result type should match expected)
-            actionExecutingContext.Result.GetType().Should().Be(expectedExecutionResult.GetType());
+            Assert.Equal(expectedExecutionResult.GetType(), actionExecutingContext.Result.GetType());
 
             // Assert (result value should be equivalent - with System.Text.Json, cached values are JsonElement)
             var resultValue = (JsonElement)((ObjectResult)actionExecutingContext.Result).Value;
-            resultValue.GetProperty("id").GetInt32().Should().Be(expectedCachedModel.Id);
-            resultValue.GetProperty("createdOn").GetDateTime().Should().Be(expectedCachedModel.CreatedOn);
+            Assert.Equal(expectedCachedModel.Id, resultValue.GetProperty("id").GetInt32());
+            Assert.Equal(expectedCachedModel.CreatedOn, resultValue.GetProperty("createdOn").GetDateTime());
 
             // Assert (response headers count)
-            actionExecutingContext.HttpContext.Response.Headers.Count.Should().Be(expectedResponseHeadersCount);
+            Assert.Equal(expectedResponseHeadersCount, actionExecutingContext.HttpContext.Response.Headers.Count);
         }
 
         /// <summary>
@@ -1616,7 +1613,7 @@ namespace IdempotentAPI.UnitTests.FiltersTests
                 Assert.NotNull(cachedDataBytes);
                 IReadOnlyDictionary<string, object> cacheData = cachedDataBytes.DeSerialize<IReadOnlyDictionary<string, object>>();
                 Assert.NotNull(cacheData);
-                cacheData.Should().NotContainKey("Request.Inflight");
+                Assert.False(cacheData.ContainsKey("Request.Inflight"));
             }
         }
 
@@ -1713,7 +1710,7 @@ namespace IdempotentAPI.UnitTests.FiltersTests
 
             // Act - First request should succeed
             await filter1.OnActionExecutionAsync(firstExecutingContext, () => Task.FromResult(firstExecutedContext));
-            firstExecutingContext.Result.Should().BeNull("First request should not have a cached result");
+            Assert.Null(firstExecutingContext.Result);
 
             // Cache the response
             await filter1.OnResultExecutionAsync(firstResultExecutingContext, () => Task.FromResult(firstResultExecutedContext));
@@ -1722,12 +1719,12 @@ namespace IdempotentAPI.UnitTests.FiltersTests
             await filter2.OnActionExecutionAsync(secondExecutingContext, () => Task.FromResult(secondExecutedContext));
 
             // Assert - The second request should be rejected with plain string
-            secondExecutingContext.Result.Should().NotBeNull("Second request with different body should be rejected");
-            secondExecutingContext.Result.Should().BeOfType<BadRequestObjectResult>();
+            Assert.NotNull(secondExecutingContext.Result);
+            Assert.IsType<BadRequestObjectResult>(secondExecutingContext.Result);
 
             var badRequestResult = (BadRequestObjectResult)secondExecutingContext.Result!;
-            badRequestResult.Value.Should().BeOfType<string>("Default behavior should return plain string");
-            badRequestResult.Value!.ToString().Should().Contain("was used in a different request");
+            Assert.IsType<string>(badRequestResult.Value);
+            Assert.Contains("was used in a different request", badRequestResult.Value!.ToString());
         }
 
         /// <summary>
@@ -1821,7 +1818,7 @@ namespace IdempotentAPI.UnitTests.FiltersTests
 
             // Act - First request should succeed
             await filter1.OnActionExecutionAsync(firstExecutingContext, () => Task.FromResult(firstExecutedContext));
-            firstExecutingContext.Result.Should().BeNull("First request should not have a cached result");
+            Assert.Null(firstExecutingContext.Result);
 
             // Cache the response
             await filter1.OnResultExecutionAsync(firstResultExecutingContext, () => Task.FromResult(firstResultExecutedContext));
@@ -1830,18 +1827,18 @@ namespace IdempotentAPI.UnitTests.FiltersTests
             await filter2.OnActionExecutionAsync(secondExecutingContext, () => Task.FromResult(secondExecutedContext));
 
             // Assert - The second request should be rejected with ProblemDetails
-            secondExecutingContext.Result.Should().NotBeNull("Second request with different body should be rejected");
-            secondExecutingContext.Result.Should().BeOfType<BadRequestObjectResult>();
+            Assert.NotNull(secondExecutingContext.Result);
+            Assert.IsType<BadRequestObjectResult>(secondExecutingContext.Result);
 
             var badRequestResult = (BadRequestObjectResult)secondExecutingContext.Result!;
-            badRequestResult.Value.Should().BeOfType<ProblemDetails>("UseProblemDetailsForErrors=true should return ProblemDetails");
+            Assert.IsType<ProblemDetails>(badRequestResult.Value);
 
             var problemDetails = (ProblemDetails)badRequestResult.Value!;
-            problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
-            problemDetails.Title.Should().Be("Bad Request");
-            problemDetails.Type.Should().Be("https://tools.ietf.org/html/rfc9110#section-15.5.1");
-            problemDetails.Detail.Should().Contain("was used in a different request");
-            problemDetails.Detail.Should().Contain(idempotencyKey);
+            Assert.Equal(StatusCodes.Status400BadRequest, problemDetails.Status);
+            Assert.Equal("Bad Request", problemDetails.Title);
+            Assert.Equal("https://tools.ietf.org/html/rfc9110#section-15.5.1", problemDetails.Type);
+            Assert.Contains("was used in a different request", problemDetails.Detail);
+            Assert.Contains(idempotencyKey, problemDetails.Detail);
         }
 
         #endregion

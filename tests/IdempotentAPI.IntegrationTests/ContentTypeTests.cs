@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Headers;
-using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,17 +53,12 @@ public class ContentTypeTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"Response 2 Status: {response2.StatusCode}");
 
         // Assert - Both responses should succeed (not 406 NotAcceptable)
-        response1.StatusCode.Should().Be(HttpStatusCode.OK,
-            "First request should succeed");
-
-        response2.StatusCode.Should().Be(HttpStatusCode.OK,
-            "Cached response should not cause 406 NotAcceptable due to Content-Type charset conflict");
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
         // Both should have valid JSON content type
-        contentType1.Should().Contain("application/json",
-            "First response should be JSON");
-        contentType2.Should().Contain("application/json",
-            "Cached response should be JSON");
+        Assert.Contains("application/json", contentType1);
+        Assert.Contains("application/json", contentType2);
     }
 
     [Fact]
@@ -99,20 +93,12 @@ public class ContentTypeTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"Response 2 Body: {content2}");
 
         // Assert
-        response1.StatusCode.Should().Be(HttpStatusCode.OK,
-            $"First request should succeed. Body: {content1}");
-
-        // This is the key assertion - cached response should not fail due to Content-Type mismatch
-        response2.StatusCode.Should().NotBe(HttpStatusCode.NotAcceptable,
-            "Cached response should not return 406 NotAcceptable. " +
-            "If this fails, it means the cached Content-Type header (with charset) " +
-            "is conflicting with content negotiation.");
-
-        response2.StatusCode.Should().Be(HttpStatusCode.OK,
-            $"Cached response should succeed. Body: {content2}");
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.NotEqual(HttpStatusCode.NotAcceptable, response2.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
         // Content should be the same (cached)
-        content1.Should().Be(content2, "Cached response should have same content");
+        Assert.Equal(content1, content2);
     }
 
     /// <summary>
@@ -153,15 +139,7 @@ public class ContentTypeTests : IClassFixture<WebApi1ApplicationFactory>
             _testOutputHelper.WriteLine($"  - {ct}");
 
         // Assert - Should have exactly one Content-Type header
-        contentTypeValues1.Should().HaveCount(1,
-            "First response should have exactly one Content-Type header");
-
-        // This is the key assertion for the fix:
-        // Before fix: Could have multiple Content-Type values (one from cache, one from formatter)
-        // After fix: Should have exactly one Content-Type value (only from formatter)
-        contentTypeValues2.Should().HaveCount(1,
-            "Cached response should have exactly one Content-Type header. " +
-            "If this fails with multiple values, the Content-Type from the cached headers " +
-            "is being added alongside the formatter's Content-Type.");
+        Assert.Equal(1, contentTypeValues1.Count);
+        Assert.Equal(1, contentTypeValues2.Count);
     }
 }

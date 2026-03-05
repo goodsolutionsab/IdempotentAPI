@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using FluentAssertions;
 using IdempotentAPI.TestWebAPIs.DTOs;
 using Xunit;
 using Xunit.Abstractions;
@@ -59,10 +58,10 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(HttpStatusCode.OK, content1);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK, content2);
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-        content1.Should().Be(content2);
+        Assert.Equal(content1, content2);
     }
 
 
@@ -86,10 +85,10 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(HttpStatusCode.OK, content1);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK, content2);
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-        content1.Should().Be(content2);
+        Assert.Equal(content1, content2);
     }
 
     [Theory]
@@ -114,12 +113,12 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(HttpStatusCode.OK, content1);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK, content2);
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-        content1.Should().NotBeNull();
-        content1.Should().NotBe("null");
-        content1.Should().Be(content2);
+        Assert.NotNull(content1);
+        Assert.NotEqual("null", content1);
+        Assert.Equal(content1, content2);
     }
 
 
@@ -143,11 +142,11 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         var response2 = await _httpClients[httpClientIndex].PostAsJsonAsync("v6/TestingIdempotentAPI/testobjectbody", requestDTO2);
 
         // Assert
-        response1.StatusCode.Should().Be(HttpStatusCode.OK);
-        response2.StatusCode.Should().Be(HttpStatusCode.BadRequest, "Because the IdempotencyKey exists for a different request body.");
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response2.StatusCode);
 
         var content2 = await response2.Content.ReadAsStringAsync();
-        content2.Should().MatchRegex("The Idempotency header key value '.*' was used in a different request\\.");
+        Assert.Matches("The Idempotency header key value '.*' was used in a different request\\.", content2);
     }
 
     [Theory]
@@ -173,8 +172,8 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(expectedhttpStatusCode, content1);
-        response2.StatusCode.Should().Be(expectedhttpStatusCode, content2);
+        Assert.Equal(expectedhttpStatusCode, response1.StatusCode);
+        Assert.Equal(expectedhttpStatusCode, response2.StatusCode);
     }
 
     [Theory]
@@ -203,8 +202,8 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(expectedhttpStatusCode, content1);
-        response2.StatusCode.Should().Be(expectedhttpStatusCode, content2);
+        Assert.Equal(expectedhttpStatusCode, response1.StatusCode);
+        Assert.Equal(expectedhttpStatusCode, response2.StatusCode);
     }
 
     [Theory]
@@ -230,11 +229,11 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(expectedhttpStatusCode, content1);
-        response2.StatusCode.Should().Be(expectedhttpStatusCode, content2);
+        Assert.Equal(expectedhttpStatusCode, response1.StatusCode);
+        Assert.Equal(expectedhttpStatusCode, response2.StatusCode);
 
-        content1.Should().Be(string.Empty);
-        content2.Should().Be(string.Empty);
+        Assert.Equal(string.Empty, content1);
+        Assert.Equal(string.Empty, content2);
     }
 
     [Theory]
@@ -263,11 +262,11 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(expectedhttpStatusCode, content1);
-        response2.StatusCode.Should().Be(expectedhttpStatusCode, content2);
+        Assert.Equal(expectedhttpStatusCode, response1.StatusCode);
+        Assert.Equal(expectedhttpStatusCode, response2.StatusCode);
 
-        content1.Should().Match(c => string.IsNullOrEmpty(c) || c == "null");
-        content2.Should().Match(c => string.IsNullOrEmpty(c) || c == "null");
+        Assert.True(string.IsNullOrEmpty(content1) || content1 == "null");
+        Assert.True(string.IsNullOrEmpty(content2) || content2 == "null");
     }
 
     [Theory]
@@ -301,8 +300,8 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
             httpPostTask1.Result.StatusCode,
             httpPostTask2.Result.StatusCode
         };
-        resultStatusCodes.Should().Contain(HttpStatusCode.NotAcceptable);
-        resultStatusCodes.Should().Contain(HttpStatusCode.Conflict);
+        Assert.Contains(HttpStatusCode.NotAcceptable, resultStatusCodes);
+        Assert.Contains(HttpStatusCode.Conflict, resultStatusCodes);
     }
 
     [Theory]
@@ -339,8 +338,8 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
             httpPostTask1.Result.StatusCode,
             httpPostTask2.Result.StatusCode
         };
-        resultStatusCodes.Should().Contain(HttpStatusCode.NotAcceptable);
-        resultStatusCodes.Should().Contain(HttpStatusCode.Conflict);
+        Assert.Contains(HttpStatusCode.NotAcceptable, resultStatusCodes);
+        Assert.Contains(HttpStatusCode.Conflict, resultStatusCodes);
     }
 
     [Theory]
@@ -365,8 +364,8 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(HttpStatusCode.OK, content1);
-        response2.StatusCode.Should().Be(HttpStatusCode.BadRequest, content2);
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, response2.StatusCode);
     }
 
     [Theory]
@@ -388,16 +387,16 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(HttpStatusCode.OK, content1);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK, content2);
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-        content1.Should().NotBeNull();
-        content1.Should().NotBe("null");
+        Assert.NotNull(content1);
+        Assert.NotEqual("null", content1);
 
-        content2.Should().NotBeNull();
-        content2.Should().NotBe("null");
+        Assert.NotNull(content2);
+        Assert.NotEqual("null", content2);
 
-        content1.Should().NotBe(content2);
+        Assert.NotEqual(content1, content2);
     }
 
     [Theory]
@@ -419,15 +418,15 @@ public class SingleApiTests : IClassFixture<WebApi1ApplicationFactory>
         _testOutputHelper.WriteLine($"content1: {Environment.NewLine}{content1}");
         _testOutputHelper.WriteLine($"content2: {Environment.NewLine}{content2}");
 
-        response1.StatusCode.Should().Be(HttpStatusCode.OK, content1);
-        response2.StatusCode.Should().Be(HttpStatusCode.OK, content2);
+        Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
 
-        content1.Should().NotBeNull();
-        content1.Should().NotBe("null");
+        Assert.NotNull(content1);
+        Assert.NotEqual("null", content1);
 
-        content2.Should().NotBeNull();
-        content2.Should().NotBe("null");
+        Assert.NotNull(content2);
+        Assert.NotEqual("null", content2);
 
-        content1.Should().NotBe(content2);
+        Assert.NotEqual(content1, content2);
     }
 }

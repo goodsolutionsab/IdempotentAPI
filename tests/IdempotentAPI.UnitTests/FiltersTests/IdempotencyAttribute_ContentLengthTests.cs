@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using FluentAssertions;
 using IdempotentAPI.AccessCache;
 using IdempotentAPI.Filters;
 using IdempotentAPI.UnitTests.ApplicationServices.DTOs;
@@ -128,12 +127,12 @@ public class IdempotencyAttribute_ContentLengthTests
         // ContentLength is NOT set
 
         // Verify ContentLength is null
-        httpContext.Request.ContentLength.Should().BeNull("ContentLength should not be auto-populated");
+        Assert.Null(httpContext.Request.ContentLength);
 
         // Act - replicate GetRawBodyAsync logic
         var request = httpContext.Request;
-        request.Body.CanRead.Should().BeTrue("Body should be readable");
-        request.Body.CanSeek.Should().BeTrue("Body should be seekable");
+        Assert.True(request.Body.CanRead);
+        Assert.True(request.Body.CanSeek);
         request.Body.Position = 0;
 
         using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
@@ -141,8 +140,8 @@ public class IdempotencyAttribute_ContentLengthTests
         request.Body.Position = 0;
 
         // Assert
-        actualBody.Should().NotBeNull("Body should be readable");
-        actualBody.Should().Be(expectedBody, "Body content should match what was set");
+        Assert.NotNull(actualBody);
+        Assert.Equal(expectedBody, actualBody);
     }
 
     /// <summary>
@@ -174,8 +173,8 @@ public class IdempotencyAttribute_ContentLengthTests
 
         // Act - access body through the context hierarchy (as the filter would)
         var request = executingContext.HttpContext.Request;
-        request.ContentLength.Should().BeNull("ContentLength should not be set");
-        request.Body.CanRead.Should().BeTrue("Body should be readable");
+        Assert.Null(request.ContentLength);
+        Assert.True(request.Body.CanRead);
 
         request.Body.Position = 0;
         using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
@@ -183,7 +182,7 @@ public class IdempotencyAttribute_ContentLengthTests
         request.Body.Position = 0;
 
         // Assert
-        actualBody.Should().Be(expectedBody, "Body content should be accessible through ActionExecutingContext");
+        Assert.Equal(expectedBody, actualBody);
     }
 
     /// <summary>
@@ -209,7 +208,7 @@ public class IdempotencyAttribute_ContentLengthTests
         var hash2 = await GenerateHashLikeFilterAsync(httpContext2.Request);
 
         // Assert
-        hash1.Should().NotBe(hash2, "Different bodies should produce different hashes");
+        Assert.NotEqual(hash1, hash2);
     }
 
     private async Task<string> GenerateHashLikeFilterAsync(HttpRequest httpRequest)
@@ -343,7 +342,7 @@ public class IdempotencyAttribute_ContentLengthTests
 
         // Act - First request should succeed
         await filter1.OnActionExecutionAsync(firstExecutingContext, () => Task.FromResult(firstExecutedContext));
-        firstExecutingContext.Result.Should().BeNull("First request should not have a cached result");
+        Assert.Null(firstExecutingContext.Result);
 
         // Cache the response
         await filter1.OnResultExecutionAsync(firstResultExecutingContext, () => Task.FromResult(firstResultExecutedContext));
@@ -352,9 +351,8 @@ public class IdempotencyAttribute_ContentLengthTests
         await filter2.OnActionExecutionAsync(secondExecutingContext, () => Task.FromResult(secondExecutedContext));
 
         // Assert - The second request should be rejected because the body is different
-        secondExecutingContext.Result.Should().NotBeNull("Second request with different body should be rejected");
-        secondExecutingContext.Result.Should().BeOfType<BadRequestObjectResult>(
-            "Same idempotency key with different request body should return BadRequest");
+        Assert.NotNull(secondExecutingContext.Result);
+        Assert.IsType<BadRequestObjectResult>(secondExecutingContext.Result);
     }
 
     /// <summary>
@@ -444,7 +442,7 @@ public class IdempotencyAttribute_ContentLengthTests
 
         // Act - First request should succeed
         await filter1.OnActionExecutionAsync(firstExecutingContext, () => Task.FromResult(firstExecutedContext));
-        firstExecutingContext.Result.Should().BeNull("First request should not have a cached result");
+        Assert.Null(firstExecutingContext.Result);
 
         // Cache the response
         await filter1.OnResultExecutionAsync(firstResultExecutingContext, () => Task.FromResult(firstResultExecutedContext));
@@ -453,14 +451,13 @@ public class IdempotencyAttribute_ContentLengthTests
         await filter2.OnActionExecutionAsync(secondExecutingContext, () => Task.FromResult(secondExecutedContext));
 
         // Assert - The second request should return the cached response (OkObjectResult)
-        secondExecutingContext.Result.Should().NotBeNull("Second request should have cached result");
-        secondExecutingContext.Result.Should().BeOfType<OkObjectResult>(
-            "Same idempotency key with same request body should return cached response");
+        Assert.NotNull(secondExecutingContext.Result);
+        Assert.IsType<OkObjectResult>(secondExecutingContext.Result);
 
         var cachedResult = secondExecutingContext.Result as OkObjectResult;
         // With System.Text.Json, cached values are JsonElement - compare the content (camelCase)
         var cachedValue = (JsonElement)cachedResult!.Value;
-        cachedValue.GetProperty("id").GetInt32().Should().Be(expectedModel.Id);
-        cachedValue.GetProperty("createdOn").GetDateTime().Should().Be(expectedModel.CreatedOn);
+        Assert.Equal(expectedModel.Id, cachedValue.GetProperty("id").GetInt32());
+        Assert.Equal(expectedModel.CreatedOn, cachedValue.GetProperty("createdOn").GetDateTime());
     }
 }
