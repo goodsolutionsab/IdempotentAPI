@@ -1,7 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<PackageId>NEOilx.IdempotentAPI.Cache.Abstractions</PackageId>
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
 		<Description>The cache definition of the IdempotentAPI project.</Description>
 		<PackageTags>cache;idempotent api;idempotency;asp.net core;attribute;middleware;rest</PackageTags>

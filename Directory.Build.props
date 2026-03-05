@@ -1,13 +1,13 @@
 <Project>
   <PropertyGroup>
-    <!-- Package metadata for neoilx fork -->
-    <Authors>Ioannis Kyriakidis, neoilx</Authors>
-    <Company>neoilx</Company>
+    <!-- Package metadata for Good Solutions AB fork -->
+    <Authors>Simon Bengtsson, Good Solutions AB</Authors>
+    <Company>Good Solutions AB</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/neoilx/IdempotentAPI</RepositoryUrl>
+    <RepositoryUrl>https://github.com/goodsolutionsab/IdempotentAPI</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/neoilx/IdempotentAPI</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/goodsolutionsab/IdempotentAPI</PackageProjectUrl>
 
     <!-- Version prefix - patch version is set by CI/CD -->
     <VersionPrefix>3.0.13</VersionPrefix>
@@ -24,7 +24,7 @@
 
   <!-- Set PackageId using MSBuildProjectName which is available at the right time -->
   <PropertyGroup>
-    <PackageId>Neoilx.$(MSBuildProjectName)</PackageId>
+    <PackageId>GoodSolutionsAB.$(MSBuildProjectName)</PackageId>
   </PropertyGroup>
 
   <!-- Include README in all packages -->

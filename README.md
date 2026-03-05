@@ -1,6 +1,26 @@
-# Idempotent API (v2.6.0)
+# Idempotent API (Good Solutions AB fork)
 
+> **This is a fork of [neoilx/IdempotentAPI](https://github.com/neoilx/IdempotentAPI), which itself is a fork of the original [ikyriak/IdempotentAPI](https://github.com/ikyriak/IdempotentAPI).**
+>
+> Published on NuGet under the `GoodSolutionsAB.*` package prefix.
 
+## Changes in the neoilx fork
+
+- Added telemetry and metrics support (`System.Diagnostics.Metrics`)
+- Added idempotency support for PUT (needed when using `If-Match` headers) and DELETE
+- Added option to return `ProblemDetails` on idempotency errors
+- Fixed attribute options so that per-attribute values override global settings
+- ContentLength fix
+
+## Changes in this fork (Good Solutions AB)
+
+- Updated to **.NET 10** and all NuGet dependencies to their latest versions
+- Fixed **FastEndpoints v8.0.1** compatibility — the endpoint filter now correctly handles `IResult` types returned by the new FE handler pattern, preventing silent 200 OK responses
+- Fixed **FusionCache v2.x** distributed cache discovery — explicitly registers `IDistributedCache` with the FusionCache builder so the L2 cache works in cluster environments
+- Replaced FluentAssertions with built-in xUnit assertions in the test suite
+- Republished all packages under the `GoodSolutionsAB.*` NuGet prefix
+
+---
 
 ## Understanding Idempotency
 

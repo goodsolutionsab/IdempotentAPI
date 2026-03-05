@@ -1,7 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <PackageId>NEOilx.IdempotentAPI.Cache.DistributedCache</PackageId>
         <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
         <Description>The DistributedCache implementation for the definition of the IdempotentAPI.Cache.</Description>
         <PackageTags>idistributed;idistributedcache;cache;idempotent api;idempotency;asp.net core;attribute;middleware;rest</PackageTags>
