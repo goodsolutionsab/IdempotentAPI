@@ -8,8 +8,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="DistributedLock.Redis" Version="1.1.1" />
-		<PackageReference Include="FastEndpoints" Version="7.2.0" />
-		<PackageReference Include="FastEndpoints.Swagger" Version="7.2.0" />
+		<PackageReference Include="FastEndpoints" Version="8.0.1" />
+		<PackageReference Include="FastEndpoints.Swagger" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.4" />
 	</ItemGroup>
