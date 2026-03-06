@@ -157,7 +157,9 @@ and, register the **IdempotentAPI Core services** for either controller-based AP
 // Option 1: Use the options defined per Controller (i.e., in the attributes).
 services.AddIdempotentAPI();
 
-// Option 2: Register the `IIdempotencyOptions` that will enable the use of the `[Idempotent(UseIdempotencyOption = true)]` option to set global default options.
+// Option 2: Register global default `IIdempotencyOptions`.
+// These options are used by default, while explicitly set `[Idempotent(...)]`
+// properties override them per controller/action.
 services.AddIdempotentAPI(idempotencyOptions);
 
 ```
@@ -376,6 +378,10 @@ app.MapPost("/example",
 
 The Idempotent attribute provides a list of options, as shown in the following table.
 
+When `IIdempotencyOptions` is registered via `services.AddIdempotentAPI(idempotencyOptions)`,
+those values are used as the default baseline. Any property explicitly set on `[Idempotent(...)]`
+overrides the corresponding global option for that controller/action.
+
 *Table 2. - Idempotent attribute options*
 
 | **Name**                    | **Type** | **Default Value** | **Description**                                              |
@@ -388,6 +394,7 @@ The Idempotent attribute provides a list of options, as shown in the following t
 | CacheOnlySuccessResponses   | bool     | True              | When true, only the responses with 2xx HTTP status codes will be cached. |
 | DistributedLockTimeoutMilli | double   | NULL              | The time the distributed lock will wait for the lock to be acquired (in milliseconds). This is Required when a `IDistributedAccessLockProvider` is provided. |
 | IsIdempotencyOptional       | bool     | False             | Set the idempotency as optional to be introduced to existing endpoints easily (which should be backward compatible). |
+| UseIdempotencyOption        | bool     | True              | Use globally registered `IIdempotencyOptions` as defaults. Set to `false` to use only values defined in the attribute. |
 
  
 

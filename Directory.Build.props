@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://github.com/goodsolutionsab/IdempotentAPI</PackageProjectUrl>
 
     <!-- Version prefix - patch version is set by CI/CD -->
-    <VersionPrefix>3.0.13</VersionPrefix>
+    <VersionPrefix>3.0.14</VersionPrefix>
 
     <!-- Enable package generation -->
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
